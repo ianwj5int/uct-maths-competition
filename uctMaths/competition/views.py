@@ -242,7 +242,7 @@ def entry_review(request):
 
 #*****************************************
 # Register Students   
-#User can register 5 students per grade and 5 pairs per grade 
+# Up to <competition.number_of_individuals> individuals and <competition.number_of_pairs> pairs per grade
 @login_required
 def newstudents(request):
     error = " "
@@ -321,10 +321,11 @@ def newstudents(request):
                   #Reference if the ID of the first person in the pair
                   for p in range(int(form.getlist("pairs",'')[grade-8])):
                         firstname = 'Pair/Paar'
-                        surname = str(grade)+chr(65+p)
+                        surname = str(grade)+chr(65 + p)   # Maps 0, 1, 2, 3... to A, B, C...
+                        pair_number = 51 + p
                         language = form.getlist('language','')[0]
                         school = assigned_school
-                        reference = '%3s%2s%2s'%(str(school.id).zfill(3),str(grade).zfill(2),str(11+p).zfill(2))
+                        reference = '%3s%2s%2s' % (str(school.id).zfill(3), str(grade).zfill(2), str(pair_number).zfill(2))
                         paired = True
                         location = assigned_school.location
 
@@ -359,14 +360,15 @@ def newstudents(request):
             for student in student_list:
                 student.delete()
 
-            for i in range (5*compadmin.admin_number_of_individuals()):
+            for i in range(5 * compadmin.admin_number_of_individuals()):
                 if form.getlist('firstname','')[i] == u'': continue
                 firstname =  correctCapitals(form.getlist('firstname','')[i])
                 surname =  correctCapitals(form.getlist('surname','')[i])
+                ind_nr = (i % compadmin.admin_number_of_individuals()) + 1
                 language =  form.getlist('language','')[0]
                 school = assigned_school
                 grade = form.getlist('grade','')[i]
-                reference = '%3s%2s%2s'%(str(school.id).zfill(3),str(grade).zfill(2),str(i%5+1).zfill(2))
+                reference = '%3s%2s%2s' % (str(school.id).zfill(3), str(grade).zfill(2), str(ind_nr).zfill(2))
                 paired = False
                 location = assigned_school.location
 
